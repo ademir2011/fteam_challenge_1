@@ -29,6 +29,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  challenge_design_system:
+    path: ../challenge_design_system
+  dependency_module:
+    path: ../dependency_module
 
 
   # The following adds the Cupertino Icons font to your application.
