@@ -1,0 +1,19 @@
+{
+    "folders": [
+        {
+            "path": "app"
+        },
+        {
+            "path": "challenge_design_system"
+        },
+        {
+            "path": "core_module"
+        },
+        {
+            "path": "dependency_module"
+        },
+        {
+            "path": "home_module"
+        }
+    ]
+}
