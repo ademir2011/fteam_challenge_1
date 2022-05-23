@@ -102,6 +102,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  home_module:
+    dependency: "direct main"
+    description:
+      path: "../home_module"
+      relative: true
+    source: path
+    version: "0.0.1"
   lints:
     dependency: transitive
     description:
