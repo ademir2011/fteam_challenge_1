@@ -3,6 +3,7 @@ import 'package:dependency_module/dependency_module.dart';
 import 'package:flutter/material.dart';
 import 'package:home_module/src/presenter/pages/pet_detail_page.dart';
 import 'package:home_module/src/presenter/pages/pet_home_page.dart';
+import 'package:home_module/src/presenter/pages/widgets/drawer/menu_drawer_items_widget.dart';
 
 class PetMenuPage extends StatefulWidget {
   const PetMenuPage({Key? key}) : super(key: key);
@@ -17,8 +18,15 @@ class AnimValue extends ValueNotifier<bool> {
   void change() => value = !value;
 }
 
+enum MenuTypeEnum { adoption, donation }
+
+class MenuTypeNotifier extends ValueNotifier<MenuTypeEnum> {
+  MenuTypeNotifier() : super(MenuTypeEnum.adoption);
+}
+
 class _PetMenuPageState extends State<PetMenuPage> {
   final animValue = Modular.get<AnimValue>();
+  final menuTypeNotifier = MenuTypeNotifier();
 
   @override
   Widget build(BuildContext context) {
@@ -70,17 +78,7 @@ class _PetMenuPageState extends State<PetMenuPage> {
                         ],
                       ),
                       const Spacer(),
-                      const DrawerItemWidget(icon: Icons.pets, title: 'Adoption', isSelected: true),
-                      const SizedBox(height: 35),
-                      const DrawerItemWidget(icon: Icons.home, title: 'Donation'),
-                      const SizedBox(height: 35),
-                      const DrawerItemWidget(icon: Icons.add, title: 'Add pet'),
-                      const SizedBox(height: 35),
-                      const DrawerItemWidget(icon: Icons.heart_broken, title: 'Favorites'),
-                      const SizedBox(height: 35),
-                      const DrawerItemWidget(icon: Icons.message, title: 'Messages'),
-                      const SizedBox(height: 35),
-                      const DrawerItemWidget(icon: Icons.person, title: 'Profile'),
+                      MenuDrawerItemsWidget(menuTypeNotifier: menuTypeNotifier),
                       const Spacer(),
                       Row(
                         children: [
@@ -110,31 +108,60 @@ class _PetMenuPageState extends State<PetMenuPage> {
                   ),
                 ),
               ),
-              AnimatedPositioned(
-                top: animValue.value ? size.width * 0.35 : 0,
-                bottom: animValue.value ? size.width * 0.35 : 0,
-                left: animValue.value ? size.width * 0.55 : 0,
-                duration: const Duration(seconds: 1),
-                child: SizedBox(
-                  width: size.width,
-                  height: size.height,
-                  child: const PetDetailPage(),
-                ),
-              ),
-              AnimatedPositioned(
-                top: animValue.value ? size.width * 0.25 : 0,
-                bottom: animValue.value ? size.width * 0.25 : 0,
-                left: animValue.value ? size.width * 0.65 : 0,
-                duration: const Duration(seconds: 1),
-                child: SizedBox(
-                  width: size.width,
-                  height: size.height,
-                  child: const PetHomePage(),
-                ),
+              AnimatedBuilder(
+                animation: menuTypeNotifier,
+                builder: (ctx, widget) {
+                  return Stack(
+                    children: [
+                      PageMenuWidget(
+                        animValue: animValue,
+                        size: size,
+                        page: const PetDetailPage(),
+                        position: menuTypeNotifier.value == MenuTypeEnum.donation ? 0 : 1,
+                      ),
+                      PageMenuWidget(
+                        animValue: animValue,
+                        size: size,
+                        page: const PetHomePage(),
+                        position: menuTypeNotifier.value == MenuTypeEnum.adoption ? 0 : 1,
+                      ),
+                    ],
+                  );
+                },
               ),
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+class PageMenuWidget extends StatelessWidget {
+  const PageMenuWidget({
+    Key? key,
+    required this.animValue,
+    required this.size,
+    required this.position,
+    required this.page,
+  }) : super(key: key);
+
+  final AnimValue animValue;
+  final Size size;
+  final int position;
+  final Widget page;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedPositioned(
+      top: animValue.value ? size.width * (0.25 + (position * 0.10)) : 0,
+      bottom: animValue.value ? size.width * (0.25 + (position * 0.10)) : 0,
+      left: animValue.value ? size.width * (0.65 - (position * 0.075)) : 0,
+      duration: const Duration(seconds: 1),
+      child: SizedBox(
+        width: size.width,
+        height: size.height,
+        child: page,
       ),
     );
   }
