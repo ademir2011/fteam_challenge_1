@@ -8,6 +8,8 @@ final themeLight = ThemeData(
   colorScheme: const ColorScheme.light(
     primary: Color(0xfffefeff),
     inversePrimary: Color(0xff84b3b2),
+    secondary: Color(0xfff6f7f7),
+    tertiary: Color(0xff316061),
   ),
   textTheme: const TextTheme(
     displaySmall: TextStyle(
