@@ -9,8 +9,15 @@ class PetDetailPage extends StatefulWidget {
   State<PetDetailPage> createState() => _PetDetailPageState();
 }
 
+class PetImagePage extends ValueNotifier<int> {
+  PetImagePage(super.value);
+}
+
 class _PetDetailPageState extends State<PetDetailPage> {
   final animValue = Modular.get<AnimValue>();
+  final pageController = PageController();
+  final petImagePage = PetImagePage(0);
+  final maxPages = 3;
 
   @override
   Widget build(BuildContext context) {
@@ -33,29 +40,66 @@ class _PetDetailPageState extends State<PetDetailPage> {
                   Container(
                     padding: const EdgeInsets.only(top: 30, left: 30, right: 30),
                     height: size.height * 0.5,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Column(
                       children: [
-                        Icon(
-                          Icons.arrow_back_rounded,
-                          size: 35,
-                          color: Theme.of(context).colorScheme.onSecondary,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.arrow_back_rounded,
+                              size: 35,
+                              color: Theme.of(context).colorScheme.onSecondary,
+                            ),
+                            const Spacer(),
+                            SizedBox(
+                              height: size.height * 0.30,
+                              width: size.width * 0.5,
+                              child: PageView.builder(
+                                itemCount: maxPages,
+                                controller: pageController,
+                                onPageChanged: (page) => petImagePage.value = page,
+                                itemBuilder: (context, pagePosition) {
+                                  return Image.network(
+                                    'https://imagensemoldes.com.br/wp-content/uploads/2020/07/Cat-PNG.png',
+                                    fit: BoxFit.cover,
+                                  );
+                                },
+                              ),
+                            ),
+                            const Spacer(),
+                            Icon(
+                              Icons.file_upload_outlined,
+                              size: 35,
+                              color: Theme.of(context).colorScheme.onSecondary,
+                            ),
+                          ],
                         ),
-                        const Spacer(),
-                        SizedBox(
-                          child: Image.network(
-                            'https://imagensemoldes.com.br/wp-content/uploads/2020/07/Cat-PNG.png',
-                            height: size.height * 0.30,
-                            width: size.width * 0.5,
-                            fit: BoxFit.cover,
+                        const SizedBox(height: 10),
+                        ValueListenableBuilder(
+                          valueListenable: petImagePage,
+                          builder: (ctx, value, wdt) => SizedBox(
+                            height: 5,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: maxPages,
+                              shrinkWrap: true,
+                              itemBuilder: (ctx, index) {
+                                return AnimatedContainer(
+                                  duration: const Duration(seconds: 1),
+                                  margin: const EdgeInsets.symmetric(horizontal: 2.5),
+                                  height: 5,
+                                  width: index == value ? 15 : 5,
+                                  decoration: BoxDecoration(
+                                    color: index == value
+                                        ? Theme.of(context).colorScheme.tertiary
+                                        : Theme.of(context).colorScheme.primary,
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                        const Spacer(),
-                        Icon(
-                          Icons.file_upload_outlined,
-                          size: 35,
-                          color: Theme.of(context).colorScheme.onSecondary,
                         ),
                       ],
                     ),
